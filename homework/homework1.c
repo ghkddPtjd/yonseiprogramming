@@ -88,7 +88,6 @@ int main() {
                     }
                 }
 
-                // 이 부분이 라운드에 맞게 올바른 문구를 출력하도록 수정되었습니다.
                 if (win == 1) {
                     next_bracket[next_idx++] = 0;
                     if (r == 0) printf("=> 4강 진출!\n\n");         // 8강 승리 시
