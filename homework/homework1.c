@@ -2,104 +2,129 @@
 #include <stdlib.h>
 #include <time.h>
 
-// 1, 2, 3 입력을 문자열로 변환해주는 함수입니다.
 const char* get_rsp_str(int choice) {
     if (choice == 1) return "가위";
-    if (choice == 2) return "바위";
-    if (choice == 3) return "보";
+    else if (choice == 2) return "바위";
+    else if (choice == 3) return "보";
     return "알 수 없음";
 }
 
 int main() {
-    // 난수 생성을 위한 시드 설정
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 
-    // 8명의 참가자 배열 선언
-    const char* players[8] = {"플레이어", "철수", "영희", "민준", "지아", "현우", "수빈", "태양"};
+    const char* names[8] = {"플레이어", "태헌", "청민", "우현", "준홍", "규은", "서연", "진성"};
+    int bracket[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
-    // 인터페이스 및 대진표 출력
+    for (int i = 0; i < 8; i++) {
+        int random_idx = rand() % 8;
+        int temp = bracket[i];
+        bracket[i] = bracket[random_idx];
+        bracket[random_idx] = temp;
+    }
+
     printf("가위바위보 토너먼트\n");
-    printf("인터페이스\n");
+    printf("비길 경우 재경기\n");
     printf("[대진표 ]\n");
     printf("8강\n");
-    printf("[1] %s\nVS\n[2] %s\n", players[0], players[1]);
-    printf("[3] %s\nVS\n[4] %s\n", players[2], players[3]);
-    printf("[5] %s\nVS\n[6] %s\n", players[4], players[5]);
-    printf("[7] %s\nVS\n[8] %s\n", players[6], players[7]);
-    printf("당신은 [1] 플레이어입니다.\n\n");
-
-    int rounds = 3; // 8강, 4강, 결승 총 3라운드
-    const char* round_names[3] = {"8강", "4강", "결승"};
+    for (int i = 0; i < 8; i += 2) {
+        printf("[%d] %s\nVS\n[%d] %s\n", i + 1, names[bracket[i]], i + 2, names[bracket[i+1]]);
+    }
     
-    // 문서의 예시 출력에 맞춰 만나는 상대를 철수(인덱스 1), 민준(인덱스 3), 태양(인덱스 7)으로 고정했습니다. (추측입니다)
-    int opponent_indices[3] = {1, 3, 7}; 
+    int player_pos = 0;
+    for (int i = 0; i < 8; i++) {
+        if (bracket[i] == 0) player_pos = i + 1;
+    }
+    printf("당신은 [%d] %s입니다.\n\n", player_pos, names[0]);
 
-    // 토너먼트 라운드 반복
-    for (int r = 0; r < rounds; r++) {
-        const char* opponent = players[opponent_indices[r]];
-        
-        if (r == 0) {
-            printf("%s\n상대 : %s\n", round_names[r], opponent);
-        } else if (r == 1) {
-            printf("%s\n상대 : %s\n", round_names[r], opponent);
-        } else {
-            printf("%s - 상대 : %s\n", round_names[r], opponent);
+    const char* round_names[3] = {"8강", "4강", "결승"};
+    int num_players = 8;
+
+    for (int r = 0; r < 3; r++) {
+        int next_bracket[4]; 
+        int next_idx = 0;
+
+        for (int i = 0; i < num_players; i += 2) {
+            int p1 = bracket[i];
+            int p2 = bracket[i+1];
+
+            if (p1 == 0 || p2 == 0) {
+                int opponent = (p1 == 0) ? p2 : p1; 
+                
+                if (r < 2) printf("%s\n상대 : %s\n", round_names[r], names[opponent]);
+                else printf("%s - 상대 : %s\n", round_names[r], names[opponent]);
+
+                int win = 0;
+                while (1) {
+                    printf("1: 가위\n2: 바위\n3: 보\n선택 > ");
+                    int p_choice = 0;
+                    
+                    if (scanf("%d", &p_choice) != 1) {
+                        while(getchar() != '\n'); 
+                        p_choice = 0;
+                    }
+
+                    if (p_choice < 1 || p_choice > 3) {
+                        printf("1,2,3 중에서 입력하세요 >\n");
+                        continue;
+                    }
+
+                    int c_choice = (rand() % 3) + 1;
+
+                    printf("나: %s\n", get_rsp_str(p_choice));
+                    printf("%s: %s\n", names[opponent], get_rsp_str(c_choice));
+
+                    if (p_choice == c_choice) {
+                        printf("=> 비겼습니다! 재경기!\n\n");
+                    } else if ((p_choice == 1 && c_choice == 3) ||
+                               (p_choice == 2 && c_choice == 1) ||
+                               (p_choice == 3 && c_choice == 2)) {
+                        printf("=> 이겼습니다!\n");
+                        win = 1;
+                        break;
+                    } else {
+                        printf("=> 졌습니다...\n");
+                        win = 0;
+                        break;
+                    }
+                }
+
+                // 이 부분이 라운드에 맞게 올바른 문구를 출력하도록 수정되었습니다.
+                if (win == 1) {
+                    next_bracket[next_idx++] = 0;
+                    if (r == 0) printf("=> 4강 진출!\n\n");         // 8강 승리 시
+                    else if (r == 1) printf("=> 결승 진출!\n\n");   // 4강 승리 시
+                    else printf("축하합니다! 우승!\n");             // 결승 승리 시
+                } else {
+                    printf("아쉽습니다. 다음 기회에!\n");
+                    return 0;
+                }
+            } 
+            else {
+                int winner = -1;
+                while (1) {
+                    int npc1_choice = (rand() % 3) + 1;
+                    int npc2_choice = (rand() % 3) + 1;
+                    
+                    if (npc1_choice == npc2_choice) continue; 
+                    
+                    if ((npc1_choice == 1 && npc2_choice == 3) ||
+                        (npc1_choice == 2 && npc2_choice == 1) ||
+                        (npc1_choice == 3 && npc2_choice == 2)) {
+                        winner = p1; 
+                        break;
+                    } else {
+                        winner = p2; 
+                        break;
+                    }
+                }
+                next_bracket[next_idx++] = winner;
+            }
         }
 
-        int p_choice = 0, c_choice = 0;
-        int win = 0;
-
-        // 승부가 날 때까지 반복 (재경기 처리)
-        while (1) {
-            printf("1: 가위\n2: 바위\n3: 보\n선택 > ");
-            
-            // 문자 입력 시 무한 루프 방지 및 예외 처리
-            if (scanf("%d", &p_choice) != 1) {
-                while(getchar() != '\n'); 
-                p_choice = 0;
-            }
-
-            // 1, 2, 3 이외의 숫자 입력 처리
-            if (p_choice < 1 || p_choice > 3) {
-                printf("1,2,3 중에서 입력하세요 >");
-                continue;
-            }
-
-            // 상대방의 선택 (1~3 랜덤)
-            c_choice = (rand() % 3) + 1; 
-
-            printf("나: %s\n", get_rsp_str(p_choice));
-            printf("%s: %s\n", opponent, get_rsp_str(c_choice));
-
-            // 승패 판별 로직
-            if (p_choice == c_choice) {
-                printf("=> 비겼습니다! 재경기!\n\n");
-            } else if ((p_choice == 1 && c_choice == 3) ||
-                       (p_choice == 2 && c_choice == 1) ||
-                       (p_choice == 3 && c_choice == 2)) {
-                printf("=> 이겼습니다!\n");
-                win = 1;
-                break; // 승리 시 루프 탈출
-            } else {
-                printf("=> 졌습니다...\n");
-                win = 0;
-                break; // 패배 시 루프 탈출
-            }
+        for (int i = 0; i < next_idx; i++) {
+            bracket[i] = next_bracket[i];
         }
-
-        // 라운드 종료 후 결과 처리
-        if (win == 0) {
-            printf("아쉽습니다. 다음 기회에!\n");
-            return 0; // 패배 시 프로그램 즉시 종료
-        } else {
-            if (r == 0) {
-                printf("=> 준결승 진출!\n\n"); // 예시 문서 5페이지 기반: 4강 생략하고 바로 결승으로 출력되는 부분 반영
-            } else if (r == 1) {
-                printf("=> 결승 진출!\n\n");
-            } else if (r == 2) {
-                printf("축하합니다! 우승!\n");
-            }
-        }
+        num_players /= 2; 
     }
 
     return 0;
