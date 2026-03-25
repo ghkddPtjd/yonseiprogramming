@@ -13,4 +13,6 @@ int main(){
     for (int i = 0; i < N; ++i){
         printf("a[%d] = %d", i, a[i]);
     }
+
+    return 0;
 }
