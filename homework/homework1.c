@@ -21,9 +21,10 @@ int main() {
         bracket[i] = bracket[random_idx];
         bracket[random_idx] = temp;
     }
-
+    printf("========================================\n");
     printf("가위바위보 토너먼트\n");
     printf("비길 경우 재경기\n");
+    printf("========================================\n");
     printf("[대진표 ]\n");
     printf("8강\n");
     for (int i = 0; i < 8; i += 2) {
@@ -34,6 +35,7 @@ int main() {
     for (int i = 0; i < 8; i++) {
         if (bracket[i] == 0) player_pos = i + 1;
     }
+    printf("========================================\n");
     printf("당신은 [%d] %s입니다.\n\n", player_pos, names[0]);
 
     const char* round_names[3] = {"8강", "4강", "결승"};
