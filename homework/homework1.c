@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> //난수 생성
 #include <time.h>
 
 const char* get_rsp_str(int choice) {
@@ -7,7 +7,7 @@ const char* get_rsp_str(int choice) {
     else if (choice == 2) return "바위";
     else if (choice == 3) return "보";
     return "알 수 없음";
-}
+} // 숫자를 문자열로 변환 
 
 int main() {
     srand((unsigned int)time(NULL));
@@ -20,7 +20,7 @@ int main() {
         int temp = bracket[i];
         bracket[i] = bracket[random_idx];
         bracket[random_idx] = temp;
-    }
+    } // 대진표 매번 랜덤으로 섞기
     printf("========================================\n");
     printf("가위바위보 토너먼트\n");
     printf("비길 경우 재경기\n");
@@ -29,7 +29,7 @@ int main() {
     printf("8강\n");
     for (int i = 0; i < 8; i += 2) {
         printf("[%d] %s\nVS\n[%d] %s\n", i + 1, names[bracket[i]], i + 2, names[bracket[i+1]]);
-    }
+    } //화면에 출
     
     int player_pos = 0;
     for (int i = 0; i < 8; i++) {
@@ -38,10 +38,10 @@ int main() {
     printf("========================================\n");
     printf("당신은 [%d] %s입니다.\n\n", player_pos, names[0]);
 
-    const char* round_names[3] = {"8강", "4강", "결승"};
+    const char* round_names[3] = {"8강", "4강", "결승"}; //라운드 이름 지정
     int num_players = 8;
 
-    for (int r = 0; r < 3; r++) {
+    for (int r = 0; r < 3; r++) { //각 라운드 반복문으로 진행
         int next_bracket[4]; 
         int next_idx = 0;
 
@@ -49,6 +49,7 @@ int main() {
             int p1 = bracket[i];
             int p2 = bracket[i+1];
 
+            //유저가 진행하는 경
             if (p1 == 0 || p2 == 0) {
                 int opponent = (p1 == 0) ? p2 : p1; 
                 
@@ -100,6 +101,7 @@ int main() {
                     return 0;
                 }
             } 
+            //npc? 컴퓨터들이 진행하는 경기
             else {
                 int winner = -1;
                 while (1) {
@@ -118,6 +120,7 @@ int main() {
                         break;
                     }
                 }
+                //다음 라운드 갱신
                 next_bracket[next_idx++] = winner;
             }
         }
