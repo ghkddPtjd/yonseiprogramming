@@ -29,7 +29,7 @@ int main() {
     printf("8강\n");
     for (int i = 0; i < 8; i += 2) {
         printf("[%d] %s\nVS\n[%d] %s\n", i + 1, names[bracket[i]], i + 2, names[bracket[i+1]]);
-    } //화면에 출
+    } //화면에 출력
     
     int player_pos = 0;
     for (int i = 0; i < 8; i++) {
@@ -49,7 +49,7 @@ int main() {
             int p1 = bracket[i];
             int p2 = bracket[i+1];
 
-            //유저가 진행하는 경
+            //유저가 진행하는 경우
             if (p1 == 0 || p2 == 0) {
                 int opponent = (p1 == 0) ? p2 : p1; 
                 
